@@ -9,13 +9,10 @@ defmodule GildedRose do
 
   def update_item(item) do
     item = cond do
+      is_legendary?(item) -> item
       item.name != "Aged Brie" && item.name != "Backstage passes to a TAFKAL80ETC concert" ->
         if item.quality > 0 do
-          if !is_sulfuras?(item) do
-            %{item | quality: item.quality - 1}
-          else
-            item
-          end
+          %{item | quality: item.quality - 1}
         else
           item
         end
@@ -52,18 +49,14 @@ defmodule GildedRose do
     item = decrease_sell_in(item)
 
     cond do
+      is_legendary?(item) -> item
       item.sell_in < 0 ->
         cond do
           item.name != "Aged Brie" ->
             cond do
               item.name != "Backstage passes to a TAFKAL80ETC concert" ->
                 cond do
-                  item.quality > 0 ->
-                    cond do
-                      !is_sulfuras?(item) ->
-                        %{item | quality: item.quality - 1}
-                      true -> item
-                    end
+                  item.quality > 0 -> %{item | quality: item.quality - 1}
                   true -> item
                 end
               true -> %{item | quality: item.quality - item.quality}
@@ -79,11 +72,11 @@ defmodule GildedRose do
     end
   end
 
-  def is_sulfuras?(item), do: item.name == "Sulfuras"
+  def is_legendary?(item), do: item.name == "Sulfuras"
 
   def decrease_sell_in(item) do
     cond do
-      !is_sulfuras?(item) -> %{item | sell_in: item.sell_in - 1}
+      !is_legendary?(item) -> %{item | sell_in: item.sell_in - 1}
       true -> item
     end
   end
