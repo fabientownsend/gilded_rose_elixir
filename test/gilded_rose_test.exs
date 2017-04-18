@@ -21,4 +21,16 @@ defmodule GildedRoseTest do
 
     assert GildedRose.update_quality(hand_of_ragnaros) == updated_hand_of_ragnaros
   end
+
+  test "aged brie increases in quality by one the older it gets" do
+    aged_brie = [%Item{name: "Aged Brie", sell_in: 1, quality: 3}]
+    updated_aged_brie = [%Item{name: "Aged Brie", sell_in: 0, quality: 4}]
+    assert GildedRose.update_quality(aged_brie) == updated_aged_brie
+  end
+
+  test "aged brie quality is never more than 50" do
+    aged_brie = [%Item{name: "Aged Brie", sell_in: 1, quality: 50}]
+    updated_aged_brie = [%Item{name: "Aged Brie", sell_in: 0, quality: 50}]
+    assert GildedRose.update_quality(aged_brie) == updated_aged_brie
+  end
 end
