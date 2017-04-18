@@ -48,11 +48,9 @@ defmodule GildedRose do
           true -> item
         end
     end
-    item = cond do
-      !is_sulfuras?(item) ->
-        %{item | sell_in: item.sell_in - 1}
-      true -> item
-    end
+
+    item = decrease_sell_in(item)
+
     cond do
       item.sell_in < 0 ->
         cond do
@@ -82,4 +80,11 @@ defmodule GildedRose do
   end
 
   def is_sulfuras?(item), do: item.name == "Sulfuras"
+
+  def decrease_sell_in(item) do
+    cond do
+      !is_sulfuras?(item) -> %{item | sell_in: item.sell_in - 1}
+      true -> item
+    end
+  end
 end
