@@ -47,7 +47,7 @@ defmodule GildedRoseTest do
   end
 
   test "backstage passes, increases in quality by 3 when there are 5 or less days" do
-    days_left_to_test = [1, 2, 3, 4, 5]
+    days_left_to_test = [1, 2, 3, 4]
 
     Enum.all?(days_left_to_test,
       fn(day_left) ->

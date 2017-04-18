@@ -8,26 +8,21 @@ defmodule GildedRose do
   end
 
   def update_item(item) do
-    item = cond do
+    item = decrease_sell_in(item)
+    cond do
       is_legendary?(item) -> item
       is_backstage_passe?(item) -> increase_quality_backstage(item)
       item.name == "Aged Brie" -> increase_quality(item)
       true ->
         if item.quality > 0 do
-          decrease_quality(item)
-        else
-          item
+          item = decrease_quality(item)
         end
-    end
 
-    item = decrease_sell_in(item)
+        if item.sell_in < 0 && item.quality > 0 do
+          item = decrease_quality(item)
+        end
 
-    cond do
-      is_legendary?(item) -> item
-      item.name == "Aged Brie" -> item
-      item.sell_in < 0 &&  is_backstage_passe?(item) -> drop_quality_to_zerro(item)
-      item.sell_in < 0 && item.quality > 0 -> decrease_quality(item)
-      true -> item
+        item
     end
   end
 
@@ -54,7 +49,8 @@ defmodule GildedRose do
 
   def increase_quality_backstage(item) do
     cond do
-      item.sell_in < 6 ->
+      item.sell_in < 0 -> drop_quality_to_zerro(item)
+      item.sell_in < 5 ->
         increase_quality(item, 3)
       item.sell_in < 11 ->
         increase_quality(item, 2)
