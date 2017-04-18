@@ -10,9 +10,9 @@ defmodule GildedRose do
   def update_item(item) do
     item = cond do
       is_legendary?(item) -> item
-      item.name != "Aged Brie" && item.name != "Backstage passes to a TAFKAL80ETC concert" ->
+      item.name != "Aged Brie" && !is_backstage_passe?(item) ->
         if item.quality > 0 do
-          %{item | quality: item.quality - 1}
+          decrease_quality(item)
         else
           item
         end
@@ -21,7 +21,7 @@ defmodule GildedRose do
           item.quality < 50 ->
             item = %{item | quality: item.quality + 1}
             cond do
-              item.name == "Backstage passes to a TAFKAL80ETC concert" ->
+              is_backstage_passe?(item) ->
                 item = cond do
                   item.sell_in < 11 ->
                     cond do
@@ -50,29 +50,17 @@ defmodule GildedRose do
 
     cond do
       is_legendary?(item) -> item
-      item.sell_in < 0 ->
-        cond do
-          item.name != "Aged Brie" ->
-            cond do
-              item.name != "Backstage passes to a TAFKAL80ETC concert" ->
-                cond do
-                  item.quality > 0 -> %{item | quality: item.quality - 1}
-                  true -> item
-                end
-              true -> %{item | quality: item.quality - item.quality}
-            end
-          true ->
-            cond do
-              item.quality < 50 ->
-                %{item | quality: item.quality + 1}
-              true -> item
-            end
-        end
+      item.name == "Aged Brie" -> item
+      item.sell_in < 0 &&  is_backstage_passe?(item) -> drop_quality_to_zerro(item)
+      item.sell_in < 0 && item.quality > 0 -> decrease_quality(item)
       true -> item
     end
   end
 
   def is_legendary?(item), do: item.name == "Sulfuras"
+  def is_backstage_passe?(item), do: item.name == "Backstage passes to a TAFKAL80ETC concert"
+  def decrease_quality(item), do: %{item | quality: item.quality - 1}
+  def drop_quality_to_zerro(item), do: %{item | quality: 0}
 
   def decrease_sell_in(item) do
     cond do
