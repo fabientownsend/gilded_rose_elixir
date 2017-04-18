@@ -63,4 +63,16 @@ defmodule GildedRoseTest do
     passed_backstage_passes = [%Item{name: "Backstage passes to a TAFKAL80ETC concert", sell_in: -1, quality: 0}]
     assert GildedRose.update_quality(backstage_passes) == passed_backstage_passes
   end
+
+  test "sulfuras, being a legendary item, never decreases in quality" do
+    item = [%Item{name: "Sulfuras", sell_in: 1, quality: 80}]
+    result = [%Item{name: "Sulfuras", sell_in: 1, quality: 80}]
+    assert GildedRose.update_quality(item) == result
+  end
+
+  test "sulfuras, being a legendary item, never has to be sold" do
+    item = [%Item{name: "Sulfuras", sell_in: 1, quality: 80}]
+    result = [%Item{name: "Sulfuras", sell_in: 1, quality: 80}]
+    assert GildedRose.update_quality(item) == result
+  end
 end
