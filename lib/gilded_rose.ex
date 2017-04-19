@@ -18,20 +18,14 @@ defmodule GildedRose do
 
   def update_sell_in(item), do: %{item | sell_in: item.sell_in - 1}
 
-  def update_backstage(%{sell_in: sell_in} = item) do
-    cond do
-      sell_in < 0 -> decrease_quality(item, item.quality)
-      sell_in < 5 -> increase_quality(item, 3)
-      sell_in < 11 -> increase_quality(item, 2)
-    end
-  end
+  def update_backstage(%{sell_in: s} = item) when s < 0, do: decrease_quality(item, item.quality)
+  def update_backstage(%{sell_in: s} = item) when s < 5, do: increase_quality(item, 3)
+  def update_backstage(%{sell_in: s} = item) when s < 11, do: increase_quality(item, 2)
 
-  def update_hand_of_ragnaros(%{sell_in: sell_in} = item) do
-    cond do
-      sell_in < 0 and item.quality > 1 -> decrease_quality(item, 2)
-      true -> decrease_quality(item, 1)
-    end
+  def update_hand_of_ragnaros(%{sell_in: s, quality: q} = item) when s < 0 and q > 1 do
+    decrease_quality(item, 2)
   end
+  def update_hand_of_ragnaros(item), do: decrease_quality(item, 1)
 
   def decrease_quality(%{quality: q} = item, value) when q > 0, do: quality(item, -value)
   def decrease_quality(item, _), do: item
