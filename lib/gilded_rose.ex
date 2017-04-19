@@ -7,30 +7,28 @@ defmodule GildedRose do
     Enum.map(items, &update_item/1)
   end
 
-  def update_item(%{name: n} = item) when n == "Sulfuras", do: item
   def update_item(item) do
-    item = decrease_sell_in(item)
-
-    cond do
-      item.name == "Backstage passes to a TAFKAL80ETC concert" -> update_backstage(item)
-      item.name == "Aged Brie" -> increase_quality(item, 1)
-      item.name == "Hand of Ragnaros" -> update_hand_of_ragnaros(item)
+    case item.name do
+      "Sulfuras" -> item
+      "Aged Brie" -> item |> update_sell_in |> increase_quality(1)
+      "Hand of Ragnaros" -> item |> update_sell_in |> update_hand_of_ragnaros
+      "Backstage passes to a TAFKAL80ETC concert" -> item |> update_sell_in |> update_backstage
     end
   end
 
-  def decrease_sell_in(item), do: %{item | sell_in: item.sell_in - 1}
+  def update_sell_in(item), do: %{item | sell_in: item.sell_in - 1}
 
-  def update_backstage(item) do
+  def update_backstage(%{sell_in: sell_in} = item) do
     cond do
-      item.sell_in < 0 -> decrease_quality(item, item.quality)
-      item.sell_in < 5 -> increase_quality(item, 3)
-      item.sell_in < 11 -> increase_quality(item, 2)
+      sell_in < 0 -> decrease_quality(item, item.quality)
+      sell_in < 5 -> increase_quality(item, 3)
+      sell_in < 11 -> increase_quality(item, 2)
     end
   end
 
-  def update_hand_of_ragnaros(item) do
+  def update_hand_of_ragnaros(%{sell_in: sell_in} = item) do
     cond do
-      item.sell_in < 0 and item.quality > 1 -> decrease_quality(item, 2)
+      sell_in < 0 and item.quality > 1 -> decrease_quality(item, 2)
       true -> decrease_quality(item, 1)
     end
   end
