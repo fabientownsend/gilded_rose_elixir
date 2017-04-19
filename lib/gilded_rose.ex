@@ -7,26 +7,18 @@ defmodule GildedRose do
     Enum.map(items, &update_item/1)
   end
 
+  def update_item(%{name: n} = item) when n == "Sulfuras", do: item
   def update_item(item) do
     item = decrease_sell_in(item)
 
     cond do
-      is_legendary?(item) -> item
-      is_backstage_passe?(item) -> update_backstage(item)
+      item.name == "Backstage passes to a TAFKAL80ETC concert" -> update_backstage(item)
       item.name == "Aged Brie" -> increase_quality(item, 1)
       item.name == "Hand of Ragnaros" -> update_hand_of_ragnaros(item)
     end
   end
 
-  def decrease_sell_in(item) do
-    cond do
-      !is_legendary?(item) -> %{item | sell_in: item.sell_in - 1}
-      true -> item
-    end
-  end
-
-  def is_legendary?(item), do: item.name == "Sulfuras"
-  def is_backstage_passe?(item), do: item.name == "Backstage passes to a TAFKAL80ETC concert"
+  def decrease_sell_in(item), do: %{item | sell_in: item.sell_in - 1}
 
   def update_backstage(item) do
     cond do
