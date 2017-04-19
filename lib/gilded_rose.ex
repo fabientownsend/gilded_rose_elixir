@@ -14,22 +14,20 @@ defmodule GildedRose do
       is_legendary?(item) -> item
       is_backstage_passe?(item) -> update_backstage(item)
       item.name == "Aged Brie" -> increase_quality(item)
-      true ->
-        if item.quality > 0 do
-          item = decrease_quality(item)
-        end
+      true -> decrease_quality(item)
+    end
+  end
 
-        if item.sell_in < 0 && item.quality > 0 do
-          item = decrease_quality(item)
-        end
-
-        item
+  def decrease_quality(item) do
+    cond do
+      item.sell_in < 0 && item.quality > 0 -> %{item | quality: item.quality - 2}
+      item.quality > 0 -> %{item | quality: item.quality - 1}
+      true -> item
     end
   end
 
   def is_legendary?(item), do: item.name == "Sulfuras"
   def is_backstage_passe?(item), do: item.name == "Backstage passes to a TAFKAL80ETC concert"
-  def decrease_quality(item), do: %{item | quality: item.quality - 1}
   def drop_quality_to_zerro(item), do: %{item | quality: 0}
 
   def update_backstage(item) do
