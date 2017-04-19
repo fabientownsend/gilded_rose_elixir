@@ -14,26 +14,22 @@ defmodule GildedRose do
 
   defp change_quality(item) do
     case item.name do
-      "Aged Brie" -> increase_quality(item, 1)
+      "Aged Brie" -> quality(item, 1)
       "Hand of Ragnaros" -> update_hand_of_ragnaros(item)
       "Backstage passes to a TAFKAL80ETC concert" -> update_backstage(item)
     end
   end
 
   defp update_hand_of_ragnaros(%{sell_in: s, quality: q} = item) when s < 0 and q > 1 do
-    decrease_quality(item, 2)
+    quality(item, -2)
   end
-  defp update_hand_of_ragnaros(item), do: decrease_quality(item, 1)
+  defp update_hand_of_ragnaros(item), do: quality(item, -1)
 
-  defp update_backstage(%{sell_in: s} = item) when s < 0, do: decrease_quality(item, item.quality)
-  defp update_backstage(%{sell_in: s} = item) when s < 5, do: increase_quality(item, 3)
-  defp update_backstage(%{sell_in: s} = item) when s < 11, do: increase_quality(item, 2)
+  defp update_backstage(%{sell_in: s} = item) when s < 0, do: quality(item, -item.quality)
+  defp update_backstage(%{sell_in: s} = item) when s < 5, do: quality(item, 3)
+  defp update_backstage(%{sell_in: s} = item) when s < 11, do: quality(item, 2)
 
-  defp decrease_quality(%{quality: q} = item, value) when q > 0, do: quality(item, -value)
-  defp decrease_quality(item, _), do: item
-
-  defp increase_quality(%{quality: q} = item, value) when q < 50, do: quality(item, value)
-  defp increase_quality(item, _), do: item
-
+  defp quality(%{quality: q} = item, value) when q >= 50 and value > 0, do: item
+  defp quality(%{quality: q} = item, value) when q <= 0, do: item
   defp quality(item, value), do: %{item | quality: item.quality + value}
 end
