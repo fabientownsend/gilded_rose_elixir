@@ -13,7 +13,7 @@ defmodule GildedRose do
     cond do
       is_legendary?(item) -> item
       is_backstage_passe?(item) -> update_backstage(item)
-      item.name == "Aged Brie" -> increase_quality(item)
+      item.name == "Aged Brie" -> increase_quality(item, 1)
       item.name == "Hand of Ragnaros" -> update_hand_of_ragnaros(item)
     end
   end
@@ -43,19 +43,13 @@ defmodule GildedRose do
     end
   end
 
-  def decrease_quality(item), do: decrease_quality(item, 1)
-  def decrease_quality(item, value) do
-    cond do
-      item.quality > 0 -> %{item | quality: item.quality - value}
-      true -> item
-    end
+  def decrease_quality(%{quality: q} = item, value) when q > 0 do
+    %{item | quality: item.quality - value}
   end
+  def decrease_quality(item, _), do: item
 
-  def increase_quality(item), do: increase_quality(item, 1)
-  def increase_quality(item, value) do
-    cond do
-      item.quality < 50 -> %{item | quality: item.quality + value}
-      true -> item
-    end
+  def increase_quality(%{quality: q} = item, value) when q < 50 do
+    %{item | quality: item.quality + value}
   end
+  def increase_quality(item, _), do: item
 end
