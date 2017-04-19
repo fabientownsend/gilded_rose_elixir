@@ -16,7 +16,7 @@ defmodule GildedRoseTest do
   end
 
   test "the quality of an hand of ragnaros is never negative" do
-    hand_of_ragnaros = [%Item{name: "Hand of Ragnaros", sell_in: 0, quality: 0}]
+    hand_of_ragnaros = [%Item{name: "Hand of Ragnaros", sell_in: 0, quality: 1}]
     updated_hand_of_ragnaros = [%Item{name: "Hand of Ragnaros", sell_in: -1, quality: 0}]
 
     assert GildedRose.update_quality(hand_of_ragnaros) == updated_hand_of_ragnaros
@@ -47,7 +47,7 @@ defmodule GildedRoseTest do
   end
 
   test "backstage passes, increases in quality by 3 when there are 5 or less days" do
-    days_left_to_test = [1, 2, 3, 4]
+    days_left_to_test = [1, 2, 3, 4, 5]
 
     Enum.all?(days_left_to_test,
       fn(day_left) ->

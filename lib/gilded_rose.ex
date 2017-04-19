@@ -38,18 +38,16 @@ defmodule GildedRose do
 
   def update_hand_of_ragnaros(item) do
     cond do
-      item.sell_in < 0 -> decrease_quality(item, 2)
+      item.sell_in < 0 and item.quality > 1 -> decrease_quality(item, 2)
       true -> decrease_quality(item, 1)
     end
   end
 
-  def decrease_quality(%{quality: q} = item, value) when q > 0 do
-    %{item | quality: item.quality - value}
-  end
+  def decrease_quality(%{quality: q} = item, value) when q > 0, do: quality(item, -value)
   def decrease_quality(item, _), do: item
 
-  def increase_quality(%{quality: q} = item, value) when q < 50 do
-    %{item | quality: item.quality + value}
-  end
+  def increase_quality(%{quality: q} = item, value) when q < 50, do: quality(item, value)
   def increase_quality(item, _), do: item
+
+  def quality(item, value), do: %{item | quality: item.quality + value}
 end
