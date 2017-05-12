@@ -1,4 +1,6 @@
 defmodule GildedRose do
+  import Item
+  import Itemm
   # Example
   # update_quality([%Item{name: "Backstage passes to a TAFKAL80ETC concert", sell_in: 9, quality: 1}])
   # => [%Item{name: "Backstage passes to a TAFKAL80ETC concert", sell_in: 8, quality: 3}]
@@ -14,20 +16,14 @@ defmodule GildedRose do
 
   defp change_sell_in(item), do: %{item | sell_in: item.sell_in - @one_day}
 
-  defp change_quality(item) do
-    case item.name do
-      "Aged Brie" -> add_quality(1, item)
-      "Hand of Ragnaros" -> ragnaros_quality_change(item) |> add_quality(item)
-      "Backstage passes to a TAFKAL80ETC concert" -> backstage_quality_change(item) |> add_quality(item)
-    end
-  end
+  defp change_quality(item), do: estimate_change(item) |> add_quality(item)
 
-  defp ragnaros_quality_change(%{sell_in: s, quality: q}) when s < 0 and q > 1, do: -2
-  defp ragnaros_quality_change(_), do: -1
-
-  defp backstage_quality_change(%{sell_in: s} = item) when s < 0, do: -item.quality
-  defp backstage_quality_change(%{sell_in: s}) when s < 5, do: 3
-  defp backstage_quality_change(%{sell_in: s}) when s < 11, do: 2
+  defp estimate_change(%{name: n} = item) when aged_brie?(n), do: Itemm.size(item)
+  defp estimate_change(%{name: n, sell_in: s, quality: q} = item) when hand_of_ragnaros?(n) and s < 0 and q > 1, do: Itemm.size(item)
+  defp estimate_change(%{name: n}) when hand_of_ragnaros?(n), do: -1
+  defp estimate_change(%{name: n, sell_in: s} = item) when backstage?(n) and s < 0, do: -item.quality
+  defp estimate_change(%{name: n, sell_in: s}) when backstage?(n) and s < 5, do: 3
+  defp estimate_change(%{name: n, sell_in: s}) when backstage?(n) and s < 11, do: 2
 
   defp add_quality(value, %{quality: q} = item) when q >= 50 and value > 0, do: item
   defp add_quality(_, %{quality: q} = item) when q <= 0, do: item
